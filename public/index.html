@@ -103,6 +103,198 @@
         margin-bottom: 0;
       }
 
+      .screen-heading {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+      }
+
+      .screen-heading h1 {
+        margin-bottom: 0;
+      }
+
+      .primary-button {
+        width: auto;
+        margin: 0;
+        padding: 10px 16px;
+      }
+
+      .screen-view {
+        margin-top: 24px;
+      }
+
+      .inspection-form {
+        width: min(100%, 560px);
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      .inspection-form select,
+      .inspection-form input,
+      .inspection-form textarea {
+        box-sizing: border-box;
+        width: 100%;
+        min-height: 46px;
+        padding: 10px 12px;
+        border: 1px solid #bdcec3;
+        border-radius: 9px;
+        background: #fff;
+        color: inherit;
+        font: inherit;
+      }
+
+      .inspection-form textarea {
+        min-height: 100px;
+        resize: vertical;
+      }
+
+      .image-previews {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 12px;
+      }
+
+      .image-previews img {
+        width: 92px;
+        height: 92px;
+        object-fit: cover;
+        border: 1px solid #d8e3dc;
+        border-radius: 8px;
+      }
+
+      .weight-range {
+        margin: 4px 0 0;
+        color: #40584d;
+        font-weight: 650;
+      }
+
+      .inspection-detail-error {
+        color: #b42318;
+        font-weight: 650;
+      }
+
+      .inspection-summary {
+        margin-bottom: 24px;
+        padding: 20px 24px;
+        border: 1px solid #d8e3dc;
+        border-radius: 14px;
+        background: #fff;
+      }
+
+      .inspection-summary p {
+        margin: 6px 0;
+      }
+
+      .inspection-summary strong {
+        color: #19342d;
+      }
+
+      .inspection-tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        border-bottom: 1px solid #bdcec3;
+      }
+
+      .inspection-tab {
+        width: auto;
+        margin: 0;
+        padding: 12px 16px;
+        border-radius: 9px 9px 0 0;
+        background: #e5eee8;
+        color: #19342d;
+      }
+
+      .inspection-tab[aria-selected="true"] {
+        background: #276447;
+        color: #fff;
+      }
+
+      .inspection-tab-panel {
+        min-height: 140px;
+        padding: 24px;
+        border: 1px solid #d8e3dc;
+        border-top: 0;
+        border-radius: 0 0 12px 12px;
+        background: #fff;
+      }
+
+      .inspection-tab-panel p {
+        margin: 0;
+      }
+
+      .inspection-detail-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.9fr);
+        gap: 28px;
+        align-items: start;
+      }
+
+      .detail-main-image {
+        min-height: 300px;
+        display: grid;
+        place-items: center;
+        overflow: hidden;
+        border: 1px solid #d8e3dc;
+        border-radius: 12px;
+        background: #f2f6f3;
+        color: #52665b;
+      }
+
+      .detail-main-image img {
+        display: block;
+        max-width: 100%;
+        max-height: 520px;
+        object-fit: contain;
+      }
+
+      .detail-thumbnails {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 12px;
+      }
+
+      .detail-thumbnails button {
+        width: 76px;
+        height: 76px;
+        margin: 0;
+        padding: 3px;
+        border: 2px solid transparent;
+        background: #fff;
+      }
+
+      .detail-thumbnails button[aria-current="true"] {
+        border-color: #276447;
+      }
+
+      .detail-thumbnails img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .detail-values {
+        margin: 0;
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 14px 18px;
+      }
+
+      .detail-values dt {
+        color: #52665b;
+        font-weight: 650;
+      }
+
+      .detail-values dd {
+        margin: 0;
+        overflow-wrap: anywhere;
+      }
+
       #not-found-view p {
         margin: 0 0 18px;
       }
@@ -238,7 +430,87 @@
       </main>
 
       <main id="app-screen" hidden>
-        <h1 id="screen-title">품질 현황</h1>
+        <div class="screen-heading">
+          <h1 id="screen-title">품질 현황</h1>
+          <button id="new-inspection-link" class="primary-button" type="button" data-route="/inspections/new" hidden>
+            사진 등록
+          </button>
+        </div>
+        <section id="home-view" class="screen-view" hidden></section>
+        <section id="inspection-new-view" class="screen-view" hidden>
+          <form id="inspection-fields" class="inspection-form">
+            <label for="inspection-product">제품</label>
+            <select id="inspection-product" name="product_id" required>
+              <option value="P-SILVER">은색 텀블러</option>
+              <option value="P-WHITE">흰색 텀블러</option>
+              <option value="P-BLACK">검정 텀블러</option>
+            </select>
+
+            <label for="inspection-date">검사일시</label>
+            <input id="inspection-date" name="inspected_at" type="datetime-local" step="1" required />
+
+            <label for="inspection-revision">검사기준</label>
+            <select id="inspection-revision" name="revision">
+              <option value="Rev.A">Rev.A</option>
+              <option value="Rev.B">Rev.B</option>
+            </select>
+
+            <label for="inspection-weight">중량(g)</label>
+            <input id="inspection-weight" name="weight_g" type="number" step="any" />
+
+            <label for="inspection-memo">메모</label>
+            <textarea id="inspection-memo" name="memo"></textarea>
+
+            <label for="inspection-images">사진</label>
+            <input id="inspection-images" name="images" type="file" accept="image/*" multiple />
+            <div id="inspection-image-previews" class="image-previews" aria-live="polite"></div>
+
+            <p id="inspection-weight-range" class="weight-range" aria-live="polite"></p>
+            <button id="inspection-submit" class="primary-button" type="submit">검사 등록</button>
+            <p id="inspection-submit-error" class="error-message" role="alert" hidden></p>
+          </form>
+        </section>
+        <section id="inspection-detail-view" class="screen-view" hidden>
+          <p id="inspection-detail-error" class="inspection-detail-error" role="alert" hidden></p>
+          <div id="inspection-detail-content" hidden>
+            <div class="inspection-summary">
+              <p>검사번호: <strong id="detail-inspection-id"></strong></p>
+              <p>제품: <strong id="detail-product-name"></strong></p>
+              <p>판정: <strong id="detail-decision"></strong></p>
+              <p id="detail-content-version"></p>
+            </div>
+            <div class="inspection-tabs" role="tablist" aria-label="검사 상세 내용">
+              <button class="inspection-tab" id="inspection-tab-1" type="button" role="tab" aria-selected="true" aria-controls="inspection-panel-1">① 사진·측정값</button>
+              <button class="inspection-tab" id="inspection-tab-2" type="button" role="tab" aria-selected="false" aria-controls="inspection-panel-2">② AI 결과 확인</button>
+              <button class="inspection-tab" id="inspection-tab-3" type="button" role="tab" aria-selected="false" aria-controls="inspection-panel-3">③ 검사기준과 비교하기</button>
+              <button class="inspection-tab" id="inspection-tab-4" type="button" role="tab" aria-selected="false" aria-controls="inspection-panel-4">④ 내 판단 기록</button>
+            </div>
+            <section id="inspection-panel-1" class="inspection-tab-panel" role="tabpanel" aria-labelledby="inspection-tab-1">
+              <div class="inspection-detail-grid">
+                <div>
+                  <div id="detail-main-image" class="detail-main-image"></div>
+                  <div id="detail-thumbnails" class="detail-thumbnails" aria-label="검사 사진"></div>
+                </div>
+                <dl class="detail-values">
+                  <dt>제품</dt><dd id="detail-value-product"></dd>
+                  <dt>검사일시</dt><dd id="detail-value-date"></dd>
+                  <dt>검사기준</dt><dd id="detail-value-revision"></dd>
+                  <dt>중량</dt><dd id="detail-value-weight"></dd>
+                  <dt>메모</dt><dd id="detail-value-memo"></dd>
+                </dl>
+              </div>
+            </section>
+            <section id="inspection-panel-2" class="inspection-tab-panel" role="tabpanel" aria-labelledby="inspection-tab-2" hidden>
+              <p>이 탭은 나중 회차에서 만듭니다.</p>
+            </section>
+            <section id="inspection-panel-3" class="inspection-tab-panel" role="tabpanel" aria-labelledby="inspection-tab-3" hidden>
+              <p>이 탭은 나중 회차에서 만듭니다.</p>
+            </section>
+            <section id="inspection-panel-4" class="inspection-tab-panel" role="tabpanel" aria-labelledby="inspection-tab-4" hidden>
+              <p>이 탭은 나중 회차에서 만듭니다.</p>
+            </section>
+          </div>
+        </section>
         <section id="not-found-view" hidden>
           <p>페이지를 찾을 수 없습니다</p>
           <a href="/" data-link>홈으로 가기</a>
@@ -261,14 +533,179 @@
       const appFooter = document.querySelector('#app-footer');
       const screenTitle = document.querySelector('#screen-title');
       const notFoundView = document.querySelector('#not-found-view');
+      const homeView = document.querySelector('#home-view');
+      const inspectionNewView = document.querySelector('#inspection-new-view');
+      const inspectionDetailView = document.querySelector('#inspection-detail-view');
+      const detailMainImage = document.querySelector('#detail-main-image');
+      const detailThumbnails = document.querySelector('#detail-thumbnails');
+      const newInspectionLink = document.querySelector('#new-inspection-link');
+      const inspectionImageInput = document.querySelector('#inspection-images');
+      const inspectionImagePreviews = document.querySelector('#inspection-image-previews');
+      const inspectionForm = document.querySelector('#inspection-fields');
+      const inspectionSubmit = document.querySelector('#inspection-submit');
+      const inspectionSubmitError = document.querySelector('#inspection-submit-error');
       const roleLabels = { writer: '작성자', reviewer: '검토자', 'factory-user': '품질관리' };
+      let selectedImageDataUrls = [];
+      let imageSelectionVersion = 0;
+      let activeInspectionRequest = 0;
+      let activeDetailImages = [];
+      function currentKoreanDateTime() {
+        const parts = new Intl.DateTimeFormat('en-CA', {
+          timeZone: 'Asia/Seoul',
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hourCycle: 'h23',
+        }).formatToParts(new Date());
+        const values = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+        return `${values.year}-${values.month}-${values.day}T${values.hour}:${values.minute}:${values.second}`;
+      }
+
+      async function loadWeightRange() {
+        const productId = document.querySelector('#inspection-product').value;
+        const revision = document.querySelector('#inspection-revision').value;
+        const rangeLine = document.querySelector('#inspection-weight-range');
+        rangeLine.textContent = '';
+        try {
+          const response = await fetch(`/api/standards/${revision}`);
+          const standard = await response.json();
+          if (!response.ok || standard.error) throw new Error(standard.error || '검사기준을 불러오지 못했습니다.');
+          const range = standard.weight_g?.[productId];
+          if (!range) throw new Error('중량 범위를 찾을 수 없습니다.');
+          rangeLine.textContent = `기준 중량: ${range.min}~${range.max}g`;
+        } catch (error) {
+          rangeLine.textContent = error.message || '중량 범위를 불러오지 못했습니다.';
+        }
+      }
+
+      function selectInspectionTab(tabIndex) {
+        for (let index = 1; index <= 4; index += 1) {
+          const selected = index === tabIndex;
+          document.querySelector(`#inspection-tab-${index}`).setAttribute('aria-selected', String(selected));
+          document.querySelector(`#inspection-panel-${index}`).hidden = !selected;
+        }
+      }
+
+      function renderDetailImages(images) {
+        activeDetailImages = images;
+        detailMainImage.replaceChildren();
+        detailThumbnails.replaceChildren();
+        if (images.length === 0) {
+          detailMainImage.textContent = '등록된 사진이 없습니다.';
+          return;
+        }
+
+        images.forEach((imageUrl, index) => {
+          const thumbnailButton = document.createElement('button');
+          thumbnailButton.type = 'button';
+          thumbnailButton.dataset.imageIndex = String(index);
+          thumbnailButton.setAttribute('aria-label', `사진 ${index + 1} 크게 보기`);
+          const thumbnail = document.createElement('img');
+          thumbnail.src = imageUrl;
+          thumbnail.alt = '';
+          thumbnailButton.append(thumbnail);
+          detailThumbnails.append(thumbnailButton);
+        });
+        showDetailImage(0);
+      }
+
+      function showDetailImage(index) {
+        const imageUrl = activeDetailImages[index];
+        if (!imageUrl) return;
+        const image = document.createElement('img');
+        image.src = imageUrl;
+        image.alt = `검사 사진 ${index + 1}`;
+        detailMainImage.replaceChildren(image);
+        [...detailThumbnails.querySelectorAll('button')].forEach((button, buttonIndex) => {
+          button.setAttribute('aria-current', String(buttonIndex === index));
+        });
+      }
+
+      detailThumbnails.addEventListener('click', (event) => {
+        const button = event.target.closest('button[data-image-index]');
+        if (button) showDetailImage(Number(button.dataset.imageIndex));
+      });
+
+      async function loadInspectionDetail() {
+        const requestId = ++activeInspectionRequest;
+        const errorMessage = document.querySelector('#inspection-detail-error');
+        const content = document.querySelector('#inspection-detail-content');
+        errorMessage.hidden = true;
+        content.hidden = true;
+        try {
+          const response = await fetch(`/api${window.location.pathname}`);
+          const inspection = await response.json();
+          if (!response.ok || inspection.error) {
+            throw new Error(inspection.error || '검사를 불러오지 못했습니다.');
+          }
+          if (requestId !== activeInspectionRequest) return;
+          const productNames = {
+            'P-SILVER': '텀블러 실버',
+            'P-WHITE': '텀블러 화이트',
+            'P-BLACK': '텀블러 블랙',
+          };
+          document.querySelector('#detail-inspection-id').textContent = inspection.inspection_id;
+          document.querySelector('#detail-product-name').textContent = productNames[inspection.product_id] || inspection.product_id;
+          document.querySelector('#detail-decision').textContent = inspection.decision || '미판정';
+          document.querySelector('#detail-content-version').textContent = `검사 기록 버전: ${inspection.content_version}`;
+          document.querySelector('#detail-value-product').textContent = productNames[inspection.product_id] || inspection.product_id;
+          document.querySelector('#detail-value-date').textContent = inspection.inspected_at;
+          document.querySelector('#detail-value-revision').textContent = inspection.revision;
+          document.querySelector('#detail-value-weight').textContent = inspection.weight_g === null ? '미측정' : `${inspection.weight_g}g`;
+          document.querySelector('#detail-value-memo').textContent = inspection.memo || '없음';
+          renderDetailImages(Array.isArray(inspection.images) ? inspection.images : []);
+          selectInspectionTab(1);
+          content.hidden = false;
+        } catch (error) {
+          if (requestId !== activeInspectionRequest) return;
+          errorMessage.textContent = error.message || '검사를 불러오지 못했습니다.';
+          errorMessage.hidden = false;
+        }
+      }
+
+      function initializeInspectionForm() {
+        document.querySelector('#inspection-date').value = currentKoreanDateTime();
+        document.querySelector('#inspection-revision').value = 'Rev.A';
+        document.querySelector('#inspection-weight').value = '';
+        document.querySelector('#inspection-memo').value = '';
+        inspectionImageInput.value = '';
+        inspectionImagePreviews.replaceChildren();
+        selectedImageDataUrls = [];
+        imageSelectionVersion += 1;
+        void loadWeightRange();
+      }
+
+      function readImageAsDataUrl(file) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = () => reject(new Error('사진을 읽지 못했습니다.'));
+          reader.readAsDataURL(file);
+        });
+      }
 
       function renderScreen() {
         const route = window.location.pathname;
+        homeView.hidden = true;
+        inspectionNewView.hidden = true;
+        inspectionDetailView.hidden = true;
+        newInspectionLink.hidden = true;
         let title = '품질 현황';
-        if (route === '/inspections/new') title = '검사 등록';
-        else if (/^\/inspections\/[^/]+$/.test(route)) title = '검사 상세';
-        else if (route === '/settings') title = '설정';
+        if (route === '/inspections/new') {
+          title = '검사 등록';
+          inspectionNewView.hidden = false;
+          initializeInspectionForm();
+        } else if (route === '/') {
+          homeView.hidden = false;
+          newInspectionLink.hidden = false;
+        } else if (/^\/inspections\/[^/]+$/.test(route)) {
+          title = '검사 상세';
+          inspectionDetailView.hidden = false;
+          void loadInspectionDetail();
+        } else if (route === '/settings') title = '설정';
         else if (route !== '/') {
           screenTitle.hidden = true;
           notFoundView.hidden = false;
@@ -341,7 +778,86 @@
         }
       });
 
+      document.querySelector('#inspection-product').addEventListener('change', loadWeightRange);
+      document.querySelector('#inspection-revision').addEventListener('change', loadWeightRange);
+      for (let tabIndex = 1; tabIndex <= 4; tabIndex += 1) {
+        document.querySelector(`#inspection-tab-${tabIndex}`).addEventListener('click', () => {
+          selectInspectionTab(tabIndex);
+        });
+      }
+      inspectionImageInput.addEventListener('change', async () => {
+        const selectionVersion = ++imageSelectionVersion;
+        selectedImageDataUrls = [];
+        inspectionImagePreviews.replaceChildren();
+        const files = [...inspectionImageInput.files];
+        try {
+          const dataUrls = await Promise.all(files.map(readImageAsDataUrl));
+          if (selectionVersion !== imageSelectionVersion) return;
+          selectedImageDataUrls = dataUrls;
+          dataUrls.forEach((dataUrl) => {
+            const image = document.createElement('img');
+            image.src = dataUrl;
+            image.alt = '고른 사진 미리 보기';
+            inspectionImagePreviews.append(image);
+          });
+        } catch (error) {
+          if (selectionVersion !== imageSelectionVersion) return;
+          inspectionImagePreviews.replaceChildren();
+          selectedImageDataUrls = [];
+          const message = document.createElement('p');
+          message.className = 'error-message';
+          message.textContent = error.message || '사진을 읽지 못했습니다.';
+          inspectionImagePreviews.append(message);
+        }
+      });
+
+      inspectionForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        inspectionSubmitError.hidden = true;
+        if (!inspectionForm.reportValidity()) return;
+        if (selectedImageDataUrls.length === 0) {
+          inspectionSubmitError.textContent = '사진을 골라 주세요.';
+          inspectionSubmitError.hidden = false;
+          return;
+        }
+
+        inspectionSubmit.disabled = true;
+        const weightValue = document.querySelector('#inspection-weight').value;
+        const dateValue = document.querySelector('#inspection-date').value;
+        const payload = {
+          product_id: document.querySelector('#inspection-product').value,
+          inspected_at: `${dateValue.replace('T', ' ')}${dateValue.length === 16 ? ':00' : ''}`,
+          revision: document.querySelector('#inspection-revision').value,
+          weight_g: weightValue === '' ? null : Number(weightValue),
+          memo: document.querySelector('#inspection-memo').value,
+          images: selectedImageDataUrls,
+        };
+
+        try {
+          const response = await fetch('/api/inspections', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+          });
+          const result = await response.json();
+          if (!response.ok || result.error) {
+            throw new Error(result.error || '검사를 등록하지 못했습니다.');
+          }
+          navigate(`/inspections/${encodeURIComponent(result.inspection_id)}`);
+        } catch (error) {
+          inspectionSubmitError.textContent = error.message || '검사를 등록하지 못했습니다.';
+          inspectionSubmitError.hidden = false;
+        } finally {
+          inspectionSubmit.disabled = false;
+        }
+      });
+
       document.addEventListener('click', (event) => {
+        const routeButton = event.target.closest('[data-route]');
+        if (routeButton) {
+          navigate(routeButton.dataset.route);
+          return;
+        }
         const link = event.target.closest('a[data-link]');
         if (
           !link ||
