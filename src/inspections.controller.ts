@@ -7,6 +7,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { randomBytes, randomUUID } from 'node:crypto';
@@ -35,6 +36,19 @@ interface UpdateInspectionBody {
 @Controller('api/inspections')
 export class InspectionsController {
   constructor(private readonly store: InspectionStore) {}
+
+  @Get()
+  getMany(
+    @Query('date') date?: string,
+    @Query('decision') decision?: string,
+    @Query('review') review?: string,
+  ): Inspection[] {
+    let inspections = this.store.getAll();
+    if (date) inspections = inspections.filter((item) => item.inspected_at.slice(0, 10) === date);
+    if (decision) inspections = inspections.filter((item) => item.decision === decision);
+    if (review === 'pending') return [];
+    return inspections.sort((a, b) => b.inspected_at.localeCompare(a.inspected_at));
+  }
 
   @Post()
   create(@Body() body: CreateInspectionBody): Inspection {
