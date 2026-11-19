@@ -8,8 +8,17 @@ import path from 'node:path';
 import { ApiExceptionFilter } from './api-exception.filter';
 import { AppModule } from './app.module';
 import { getStorageInfo } from './storage-mode';
+import { getGeminiInfo, validateGeminiMode } from './gemini-mode';
 
 async function bootstrap(): Promise<void> {
+  try {
+    validateGeminiMode();
+  } catch (error) {
+    console.error(error instanceof Error ? error.message : 'Gemini 모드 설정을 확인하세요.');
+    process.exitCode = 1;
+    return;
+  }
+
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   const publicDirectory = path.join(process.cwd(), 'public');
   const runtimeDirectory = path.join(process.cwd(), 'runtime');
@@ -64,6 +73,7 @@ async function bootstrap(): Promise<void> {
   await app.listen(port, '127.0.0.1');
   console.log(`품질 대시보드 서버 실행 중: http://127.0.0.1:${port}`);
   console.log(`저장소: ${getStorageInfo().label}`);
+  console.log(`Gemini 판독: ${getGeminiInfo().gemini_label}`);
 }
 
 void bootstrap();

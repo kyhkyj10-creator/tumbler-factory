@@ -12,6 +12,9 @@ import {
 import { randomBytes, randomUUID } from 'node:crypto';
 import type { Inspection } from './inspection.types';
 import { InspectionStore, type PreparedPhoto } from './inspection.store';
+import { GeminiResultStore } from './gemini-result.store';
+import { getGeminiInfo } from './gemini-mode';
+import { findPrompt } from './prompts.controller';
 
 const productIds = new Set(['P-SILVER', 'P-WHITE', 'P-BLACK']);
 
@@ -30,9 +33,17 @@ interface UpdateInspectionBody {
   weight_g?: unknown;
 }
 
+interface StartGeminiBody {
+  revision?: unknown;
+  prompt?: unknown;
+}
+
 @Controller('api/inspections')
 export class InspectionsController {
-  constructor(private readonly store: InspectionStore) {}
+  constructor(
+    private readonly store: InspectionStore,
+    private readonly geminiResults: GeminiResultStore,
+  ) {}
 
   @Get()
   async getMany(
@@ -81,7 +92,16 @@ export class InspectionsController {
       content_version: 0,
       images: [],
     };
-    return this.store.register(inspection, photos);
+    const registered = await this.store.register(inspection, photos);
+    try {
+      await this.startGeminiRun(registered, {
+        revision: registered.revision,
+        prompt: 'v3',
+      });
+    } catch {
+      // 판독 시작에 실패해도 이미 등록된 검사는 유지합니다.
+    }
+    return registered;
   }
 
   @Get(':inspectionId')
@@ -119,6 +139,46 @@ export class InspectionsController {
     inspection.content_version += 1;
     await this.store.update(inspection);
     return inspection;
+  }
+
+  @Post(':inspectionId/gemini')
+  async startGemini(
+    @Param('inspectionId') inspectionId: string,
+    @Body() body: StartGeminiBody,
+  ) {
+    const inspection = await this.store.find(inspectionId);
+    if (!inspection) throw new NotFoundException('검사를 찾을 수 없습니다.');
+
+    return this.startGeminiRun(inspection, body);
+  }
+
+  private async startGeminiRun(inspection: Inspection, body: StartGeminiBody) {
+    const mode = getGeminiInfo().gemini_mode;
+    if (mode === 'off') throw new BadRequestException('Gemini 판독이 꺼져 있습니다.');
+
+    const revision = body?.revision === undefined ? inspection.revision : body.revision;
+    if (revision !== 'Rev.A' && revision !== 'Rev.B') {
+      throw new BadRequestException('검사기준을 확인하세요.');
+    }
+
+    const promptName = body?.prompt === undefined ? 'v3' : body.prompt;
+    if (typeof promptName !== 'string') {
+      throw new BadRequestException('지시문 버전을 확인하세요.');
+    }
+    const prompt = findPrompt(promptName);
+    if (!prompt) throw new BadRequestException('지시문 버전을 찾을 수 없습니다.');
+
+    if (mode === 'live') {
+      throw new BadRequestException('실제 Gemini 판독은 아직 준비되지 않았습니다.');
+    }
+    return this.geminiResults.startMock(inspection, revision, prompt.name, prompt.text);
+  }
+
+  @Get(':inspectionId/gemini')
+  async getGeminiStatus(@Param('inspectionId') inspectionId: string) {
+    const inspection = await this.store.find(inspectionId);
+    if (!inspection) throw new NotFoundException('검사를 찾을 수 없습니다.');
+    return this.geminiResults.getStatus(inspection);
   }
 
   private readWeight(value: unknown): number | null {
