@@ -1,4 +1,4 @@
-import { Controller, Get, NotFoundException, Param } from '@nestjs/common';
+﻿import { Controller, Get, NotFoundException, Param } from '@nestjs/common';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 
@@ -23,5 +23,15 @@ export class CatalogController {
 
     const filePath = path.join(process.cwd(), 'standards', `${revision}.json`);
     return JSON.parse(readFileSync(filePath, 'utf8')) as unknown;
+  }
+
+  @Get('standards/:revision/text')
+  getStandardText(@Param('revision') revision: string): { revision: string; text: string } {
+    if (revision !== 'Rev.A' && revision !== 'Rev.B') {
+      throw new NotFoundException('검사기준을 찾을 수 없습니다.');
+    }
+
+    const filePath = path.join(process.cwd(), 'standards', `notebooklm-${revision}.md`);
+    return { revision, text: readFileSync(filePath, 'utf8') };
   }
 }
