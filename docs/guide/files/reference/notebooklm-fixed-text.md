@@ -1,4 +1,4 @@
-﻿# NotebookLM 질문에 늘 붙일 글
+# NotebookLM 질문에 늘 붙일 글
 
 쓰는 곳: 서버가 NotebookLM에 보내는 질문 글과 검사 상세 3번 탭의 "NotebookLM에 보낸 질문 보기". 질문 글의 순서는 5회차 문서의 "질문 글"에 있습니다.
 
