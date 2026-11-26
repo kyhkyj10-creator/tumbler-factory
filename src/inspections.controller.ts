@@ -169,7 +169,7 @@ export class InspectionsController {
     if (!prompt) throw new BadRequestException('지시문 버전을 찾을 수 없습니다.');
 
     if (mode === 'live') {
-      throw new BadRequestException('실제 Gemini 판독은 아직 준비되지 않았습니다.');
+      return this.geminiResults.startLive(inspection, revision, prompt.name, prompt.text);
     }
     return this.geminiResults.startMock(inspection, revision, prompt.name, prompt.text);
   }
